@@ -76,3 +76,19 @@ output "s3_bucket_arn" {
   description = "ARN of the TFE objects S3 bucket"
   value       = aws_s3_bucket.tfe_objects.arn
 }
+
+# RDS Outputs
+output "tfe_rds_endpoint" {
+  description = "RDS PostgreSQL endpoint in host:port format"
+  value       = aws_db_instance.tfe.endpoint
+}
+
+output "tfe_rds_arn" {
+  description = "ARN of the RDS PostgreSQL instance"
+  value       = aws_db_instance.tfe.arn
+}
+
+output "tfe_rds_master_user_secret_arn" {
+  description = "ARN of the Secrets Manager secret containing the RDS master password"
+  value       = aws_db_instance.tfe.master_user_secret[0].secret_arn
+}
