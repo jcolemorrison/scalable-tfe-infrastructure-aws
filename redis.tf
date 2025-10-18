@@ -12,9 +12,9 @@
 
 # Sizing and HA configuration - easy to bump for production
 locals {
-  redis_size      = "small" # Options: "small", "medium"
-  enable_multi_az = false   # Set true for HA with automatic failover (increases cost)
-  use_auth_token  = false   # Set true to use auth token from Secrets Manager (token will be in state)
+  redis_size            = "small" # Options: "small", "medium"
+  redis_enable_multi_az = false   # Set true for HA with automatic failover (increases cost)
+  use_auth_token        = false   # Set true to use auth token from Secrets Manager (token will be in state)
 
   # Node type mapping
   redis_node_types = {
@@ -65,8 +65,8 @@ resource "aws_elasticache_replication_group" "tfe" {
   # Cluster configuration
   # Multi-AZ behavior controlled by automatic_failover_enabled and replicas_per_node_group
   num_node_groups            = 1
-  replicas_per_node_group    = local.enable_multi_az ? 1 : 0
-  automatic_failover_enabled = local.enable_multi_az
+  replicas_per_node_group    = local.redis_enable_multi_az ? 1 : 0
+  automatic_failover_enabled = local.redis_enable_multi_az
 
   # Network & security
   subnet_group_name  = aws_elasticache_subnet_group.tfe.name

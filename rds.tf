@@ -7,8 +7,8 @@
 
 # Sizing configuration - easy to bump for production
 locals {
-  db_size         = "small" # Options: "small", "medium"
-  enable_multi_az = false   # Set true for HA (increases cost)
+  db_size            = "small" # Options: "small", "medium"
+  db_enable_multi_az = false   # Set true for HA (increases cost)
 
   # Instance class mapping
   db_instance_classes = {
@@ -55,7 +55,7 @@ resource "aws_db_instance" "tfe" {
   db_subnet_group_name   = aws_db_subnet_group.tfe.name
   vpc_security_group_ids = [aws_security_group.rds.id]
   publicly_accessible    = false
-  multi_az               = local.enable_multi_az
+  multi_az               = local.db_enable_multi_az
 
   # Backup & maintenance
   backup_retention_period = 7
