@@ -12,7 +12,7 @@
  */
 
 module "vpc" {
-  source  = "app.terraform.io/jcolemorrison/vpc-base/aws"
+  source  = "app.terraform.io/jcolemorrison/aws-base-vpc/AWS"
   version = "~> 0.8.3" # Adjust version as needed
 
   # Required variables

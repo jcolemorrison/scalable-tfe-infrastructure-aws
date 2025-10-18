@@ -92,3 +92,14 @@ output "tfe_rds_master_user_secret_arn" {
   description = "ARN of the Secrets Manager secret containing the RDS master password"
   value       = aws_db_instance.tfe.master_user_secret[0].secret_arn
 }
+
+# ElastiCache Redis Outputs
+output "tfe_redis_primary_endpoint" {
+  description = "Primary Redis endpoint address"
+  value       = aws_elasticache_replication_group.tfe.primary_endpoint_address
+}
+
+output "tfe_redis_reader_endpoint" {
+  description = "Reader Redis endpoint address"
+  value       = aws_elasticache_replication_group.tfe.reader_endpoint_address
+}
