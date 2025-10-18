@@ -65,3 +65,14 @@ output "sg_redis_id" {
   description = "ID of the Redis security group"
   value       = aws_security_group.redis.id
 }
+
+# S3 Outputs
+output "s3_bucket_name" {
+  description = "Name of the TFE objects S3 bucket"
+  value       = aws_s3_bucket.tfe_objects.id
+}
+
+output "s3_bucket_arn" {
+  description = "ARN of the TFE objects S3 bucket"
+  value       = aws_s3_bucket.tfe_objects.arn
+}
