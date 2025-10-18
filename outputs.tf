@@ -1,11 +1,11 @@
 output "route53_zone_id" {
   description = "Public hosted zone ID (use this for future records)"
-  value       = aws_route53_zone.primary.zone_id
+  value       = data.aws_route53_zone.primary.zone_id
 }
 
 output "route53_name_servers" {
   description = "Name servers to configure at the domain registrar"
-  value       = aws_route53_zone.primary.name_servers
+  value       = data.aws_route53_zone.primary.name_servers
 }
 
 
