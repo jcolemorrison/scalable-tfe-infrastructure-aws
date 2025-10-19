@@ -82,26 +82,16 @@ resource "aws_iam_role_policy" "tfe_instance" {
           "arn:aws:ssm:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:parameter/tfe/*"
         ]
       },
-      # Uncomment if using customer-managed KMS keys for Secrets Manager or SSM
-      # {
-      #   Sid    = "KMSDecrypt"
-      #   Effect = "Allow"
-      #   Action = [
-      #     "kms:Decrypt",
-      #     "kms:DescribeKey"
-      #   ]
-      #   Resource = [
-      #     "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:key/*"
-      #   ]
-      #   Condition = {
-      #     StringEquals = {
-      #       "kms:ViaService" = [
-      #         "secretsmanager.${data.aws_region.current.name}.amazonaws.com",
-      #         "ssm.${data.aws_region.current.name}.amazonaws.com"
-      #       ]
-      #     }
-      #   }
-      # },
+      {
+        # KMS - Decrypt SSM SecureString parameters using AWS-managed key
+        # Required for: aws ssm get-parameter --with-decryption
+        Sid    = "KMSDecryptSSM"
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt"
+        ]
+        Resource = "arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:alias/aws/ssm"
+      },
       {
         # S3 - List bucket (for TFE object storage)
         Sid    = "S3ListBucket"
@@ -126,29 +116,17 @@ resource "aws_iam_role_policy" "tfe_instance" {
           "${aws_s3_bucket.tfe_objects.arn}/*"
         ]
       },
-      # NOTE: Temporary wide scope for CloudWatch Logs. When we add a named log group
-      # (e.g., /tfe/${var.project_name}) and the CW Agent in the Launch Template,
-      # we will tighten CreateLogStream/PutLogEvents to the specific log group ARN.
       {
-        # CloudWatch Logs - Create log groups (requires wildcard resource)
-        Sid    = "CloudWatchLogsCreateGroup"
-        Effect = "Allow"
-        Action = [
-          "logs:CreateLogGroup",
-          "logs:DescribeLogGroups"
-        ]
-        Resource = "*"
-      },
-      {
-        # CloudWatch Logs - Write to log streams
-        Sid    = "CloudWatchLogsStreams"
+        # CloudWatch Logs - Write to TFE log group and streams
+        # Log group created in cloudwatch.tf: /aws/tfe/${var.project_name}
+        Sid    = "CloudWatchLogsAccess"
         Effect = "Allow"
         Action = [
           "logs:CreateLogStream",
           "logs:PutLogEvents",
           "logs:DescribeLogStreams"
         ]
-        Resource = "*"
+        Resource = "${aws_cloudwatch_log_group.tfe.arn}:*"
       }
     ]
   })

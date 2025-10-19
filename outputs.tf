@@ -169,6 +169,11 @@ output "tfe_alb_dns_name" {
   value       = aws_lb.tfe.dns_name
 }
 
+output "tfe_alb_zone_id" {
+  description = "Zone ID of the ALB (for Route53 ALIAS record)"
+  value       = aws_lb.tfe.zone_id
+}
+
 output "tfe_alb_listener_arn" {
   description = "ARN of the HTTPS listener"
   value       = aws_lb_listener.https.arn
