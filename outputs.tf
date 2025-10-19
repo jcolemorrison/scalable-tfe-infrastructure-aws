@@ -152,3 +152,24 @@ output "tfe_cloudwatch_log_group_arn" {
   description = "ARN of the CloudWatch Log Group for TFE logs"
   value       = aws_cloudwatch_log_group.tfe.arn
 }
+
+# ALB Outputs
+output "tfe_target_group_arn" {
+  description = "ARN of the TFE target group (attach to ASG)"
+  value       = aws_lb_target_group.tfe.arn
+}
+
+output "tfe_alb_arn" {
+  description = "ARN of the Application Load Balancer"
+  value       = aws_lb.tfe.arn
+}
+
+output "tfe_alb_dns_name" {
+  description = "DNS name of the ALB (use for Route53 A/ALIAS record)"
+  value       = aws_lb.tfe.dns_name
+}
+
+output "tfe_alb_listener_arn" {
+  description = "ARN of the HTTPS listener"
+  value       = aws_lb_listener.https.arn
+}

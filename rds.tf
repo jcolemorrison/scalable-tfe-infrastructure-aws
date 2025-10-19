@@ -34,15 +34,15 @@ resource "aws_db_instance" "tfe" {
   identifier = "${var.project_name}-postgres"
 
   # Engine configuration
-  engine               = "postgres"
-  engine_version       = "15.10" # Latest PostgreSQL 15.x
-  instance_class       = local.db_instance_classes[local.db_size]
-  db_name              = "tfe"
-  port                 = 5432
+  engine         = "postgres"
+  engine_version = "15.10" # Latest PostgreSQL 15.x
+  instance_class = local.db_instance_classes[local.db_size]
+  db_name        = "tfe"
+  port           = 5432
 
   # Credentials - managed by RDS in Secrets Manager
-  username                    = "tfe"
-  manage_master_user_password = true
+  username                      = "tfe"
+  manage_master_user_password   = true
   master_user_secret_kms_key_id = null # Use default AWS managed key
 
   # Storage configuration
