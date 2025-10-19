@@ -16,15 +16,16 @@ resource "aws_acm_certificate" "wildcard" {
 }
 
 # DNS validation records in the hosted zone you just created
-# Note: Wildcard and apex may share the same validation record, so we key by record name
+# Note: Wildcard and apex may share the same validation record, so we deduplicate
 resource "aws_route53_record" "acm_validation" {
   for_each = {
-    for dvo in aws_acm_certificate.wildcard.domain_validation_options :
-    dvo.resource_record_name => {
-      name   = dvo.resource_record_name
-      type   = dvo.resource_record_type
-      record = dvo.resource_record_value
-    }
+    for dvo in distinct([
+      for option in aws_acm_certificate.wildcard.domain_validation_options : {
+        name   = option.resource_record_name
+        type   = option.resource_record_type
+        record = option.resource_record_value
+      }
+    ]) : dvo.name => dvo
   }
 
   zone_id = data.aws_route53_zone.primary.zone_id
