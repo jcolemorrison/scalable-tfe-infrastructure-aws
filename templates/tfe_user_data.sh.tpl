@@ -25,6 +25,8 @@ export RDS_DATABASE="${rds_database_name:-tfe}" # Default to "tfe" if not provid
 export RDS_SECRET_ARN="${rds_secret_arn}"
 export REDIS_HOST="${redis_host}"
 export REDIS_PORT="${redis_port}"
+export REDIS_USE_TLS="${redis_use_tls}"
+export REDIS_USE_AUTH="${redis_use_auth}"
 
 # Logging
 LOG_FILE="/var/log/tfe_user_data.log"
@@ -233,10 +235,10 @@ cat <<EOF | sudo tee /etc/tfe-settings.json
     "value": "$REDIS_PORT"
   },
   "redis_use_tls": {
-    "value": "1"
+    "value": "$REDIS_USE_TLS"
   },
   "redis_use_password": {
-    "value": "0"
+    "value": "$REDIS_USE_AUTH"
   }
 }
 EOF

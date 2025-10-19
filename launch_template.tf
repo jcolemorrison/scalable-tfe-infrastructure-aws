@@ -93,8 +93,8 @@ resource "aws_launch_template" "tfe" {
     # Redis configuration
     redis_host     = aws_elasticache_replication_group.tfe.primary_endpoint_address
     redis_port     = "6379"
-    redis_use_tls  = "true"
-    redis_use_auth = "false"
+    redis_use_tls  = "1"  # TFE expects "1" for true, "0" for false
+    redis_use_auth = "0"  # No auth token (redis.tf: use_auth_token = false)
   }))
 
   # Tag specifications for instances and volumes created from this template
