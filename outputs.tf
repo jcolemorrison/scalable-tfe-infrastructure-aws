@@ -103,3 +103,14 @@ output "tfe_redis_reader_endpoint" {
   description = "Reader Redis endpoint address"
   value       = aws_elasticache_replication_group.tfe.reader_endpoint_address
 }
+
+# IAM Outputs
+output "tfe_instance_profile_name" {
+  description = "Name of the IAM instance profile for TFE EC2 instances"
+  value       = aws_iam_instance_profile.tfe.name
+}
+
+output "tfe_instance_role_arn" {
+  description = "ARN of the IAM role for TFE EC2 instances"
+  value       = aws_iam_role.tfe_instance.arn
+}
