@@ -24,7 +24,7 @@ data "aws_ami" "ubuntu" {
 
 # Local variables for Launch Template configuration
 locals {
-  instance_type = "t3.large" # 2 vCPU, 8 GB RAM (TFE minimum: 4 GB)
+  instance_type = "t3.medium" # Testing with smaller instance size (2 vCPU, 4 GB RAM - minimum for TFE)
   hostname      = "tfe.${var.dns_zone_name}"
 }
 
@@ -58,7 +58,7 @@ resource "aws_launch_template" "tfe" {
     ebs {
       volume_size           = 50 # TFE recommendation: 40-50 GB minimum
       volume_type           = "gp3"
-      encrypted             = true
+      encrypted             = false # Temporarily disabled to test KMS permission issue
       delete_on_termination = true
     }
   }
