@@ -114,3 +114,41 @@ output "tfe_instance_role_arn" {
   description = "ARN of the IAM role for TFE EC2 instances"
   value       = aws_iam_role.tfe_instance.arn
 }
+
+# Launch Template Outputs
+output "tfe_launch_template_id" {
+  description = "ID of the TFE launch template"
+  value       = aws_launch_template.tfe.id
+}
+
+output "tfe_launch_template_latest_version" {
+  description = "Latest version of the TFE launch template"
+  value       = aws_launch_template.tfe.latest_version
+}
+
+output "tfe_hostname" {
+  description = "TFE hostname (FQDN)"
+  value       = "tfe.${var.dns_zone_name}"
+}
+
+# SSM Parameter Outputs
+output "tfe_enc_password_parameter_name" {
+  description = "SSM Parameter Store path for TFE encryption password"
+  value       = aws_ssm_parameter.tfe_enc_password.name
+}
+
+output "tfe_enc_password_parameter_arn" {
+  description = "ARN of the SSM parameter containing TFE encryption password"
+  value       = aws_ssm_parameter.tfe_enc_password.arn
+}
+
+# CloudWatch Outputs
+output "tfe_cloudwatch_log_group_name" {
+  description = "Name of the CloudWatch Log Group for TFE logs"
+  value       = aws_cloudwatch_log_group.tfe.name
+}
+
+output "tfe_cloudwatch_log_group_arn" {
+  description = "ARN of the CloudWatch Log Group for TFE logs"
+  value       = aws_cloudwatch_log_group.tfe.arn
+}
