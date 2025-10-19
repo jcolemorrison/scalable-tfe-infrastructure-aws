@@ -189,3 +189,9 @@ output "tfe_asg_arn" {
   description = "Auto Scaling Group ARN for TFE app nodes"
   value       = aws_autoscaling_group.tfe.arn
 }
+
+# Route 53 Record Outputs
+output "tfe_fqdn" {
+  description = "Fully Qualified Domain Name for TFE (from Route 53 record)"
+  value       = aws_route53_record.tfe.fqdn
+}
