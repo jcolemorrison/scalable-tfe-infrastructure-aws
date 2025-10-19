@@ -13,7 +13,7 @@
 
 module "vpc" {
   source  = "app.terraform.io/jcolemorrison/vpc-base/aws"
-  version = "0.8.3"
+  version = "0.8.4"
 
   # Required variables
   name       = var.project_name
