@@ -17,12 +17,14 @@ resource "aws_lb_target_group" "tfe" {
 
   health_check {
     enabled             = true
-    protocol            = "TCP" # Start with TCP (most forgiving); switch to HTTPS path check later
+    protocol            = "HTTPS"
     port                = 443
+    path                = "/_health_check"
     interval            = 30
     healthy_threshold   = 2
     unhealthy_threshold = 2
     timeout             = 10
+    matcher             = "200"
   }
 
   stickiness {
