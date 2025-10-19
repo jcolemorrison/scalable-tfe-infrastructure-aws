@@ -27,9 +27,10 @@ resource "aws_autoscaling_group" "tfe" {
   target_group_arns = [aws_lb_target_group.tfe.arn]
 
   # Health check configuration
-  # ELB health checks ensure instances are actually serving traffic
-  health_check_type         = "ELB"
-  health_check_grace_period = 900 # 15 minutes for TFE boot + Replicated + first health check
+  # Use EC2 health checks initially - instances won't be healthy for ELB until TFE is fully installed (~20-30 min)
+  # Switch to ELB after first successful deployment
+  health_check_type         = "EC2"
+  health_check_grace_period = 300 # 5 minutes for instance to boot (not waiting for TFE)
 
   # Scaling behavior
   default_cooldown     = 300                 # 5 minutes between scaling events
@@ -49,8 +50,9 @@ resource "aws_autoscaling_group" "tfe" {
   }
 
   # Deployment timeouts
-  wait_for_capacity_timeout = "15m" # Match grace period for initial deployment
-  wait_for_elb_capacity     = 2     # Wait for 2 instances to pass ELB health checks before apply completes
+  # Don't wait for ELB capacity during initial deployment - TFE takes 20-30 min to install
+  # Instances will register to target group but won't be healthy until TFE is running
+  wait_for_capacity_timeout = "0" # Don't wait for instances to become healthy
 
   # Instance tags (propagated to EC2 instances at launch)
   tag {
