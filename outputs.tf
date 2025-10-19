@@ -178,3 +178,14 @@ output "tfe_alb_listener_arn" {
   description = "ARN of the HTTPS listener"
   value       = aws_lb_listener.https.arn
 }
+
+# Auto Scaling Group Outputs
+output "tfe_asg_name" {
+  description = "Auto Scaling Group name for TFE app nodes"
+  value       = aws_autoscaling_group.tfe.name
+}
+
+output "tfe_asg_arn" {
+  description = "Auto Scaling Group ARN for TFE app nodes"
+  value       = aws_autoscaling_group.tfe.arn
+}
