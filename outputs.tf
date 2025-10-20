@@ -116,15 +116,15 @@ output "tfe_instance_role_arn" {
 }
 
 # Launch Template Outputs
-# output "tfe_launch_template_id" {
-#   description = "ID of the TFE launch template"
-#   value       = aws_launch_template.tfe.id
-# }
+output "tfe_launch_template_id" {
+  description = "ID of the TFE launch template"
+  value       = aws_launch_template.tfe.id
+}
 
-# output "tfe_launch_template_latest_version" {
-#   description = "Latest version of the TFE launch template"
-#   value       = aws_launch_template.tfe.latest_version
-# }
+output "tfe_launch_template_latest_version" {
+  description = "Latest version of the TFE launch template"
+  value       = aws_launch_template.tfe.latest_version
+}
 
 output "tfe_hostname" {
   description = "TFE hostname (FQDN)"
