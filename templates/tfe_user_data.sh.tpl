@@ -187,10 +187,21 @@ echo "--- Instance private IP: $PRIVATE_IP ---"
 
 # Download and run the Replicated install script
 # Note: Using private-address only; nodes are in private subnets behind ALB
+# Flags explained:
+#   no-proxy: Don't use a proxy for Replicated traffic
+#   private-address: Set the private IP for Replicated to bind to
+#   public-address: Set to private IP (we're behind ALB, no direct public access)
+#   no-docker: Don't install Docker (we already installed it)
+# Using 'yes' to auto-answer any interactive prompts (like Docker version warnings)
+echo "--- Downloading Replicated installer ---"
 curl -o /tmp/install.sh https://install.terraform.io/ptfe/stable
-sudo bash /tmp/install.sh \
+
+echo "--- Running Replicated installer (non-interactive) ---"
+yes | sudo bash /tmp/install.sh \
   no-proxy \
-  private-address="$PRIVATE_IP"
+  private-address="$PRIVATE_IP" \
+  public-address="$PRIVATE_IP" \
+  no-docker
 
 echo "--- Replicated installation complete ---"
 
@@ -283,9 +294,65 @@ done
 
 echo "--- Replicated is ready ---"
 
+###############################################################################
+# 7a. Fetch and Load TFE License
+###############################################################################
+echo "--- Fetching TFE license from Secrets Manager ---"
+
+# Fetch license from Secrets Manager with retry logic
+MAX_RETRIES=3
+RETRY_COUNT=0
+LICENSE_JSON=""
+
+while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+  LICENSE_JSON=$(aws secretsmanager get-secret-value \
+    --secret-id "/tfe/license" \
+    --region "$AWS_REGION" \
+    --query SecretString \
+    --output text 2>/dev/null) && break
+  
+  RETRY_COUNT=$((RETRY_COUNT + 1))
+  if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+    echo "--- Retry $RETRY_COUNT/$MAX_RETRIES: License fetch failed, retrying in 5 seconds ---"
+    sleep 5
+  fi
+done
+
+if [ -z "$LICENSE_JSON" ]; then
+  echo "ERROR: Failed to fetch TFE license from Secrets Manager after $MAX_RETRIES attempts"
+  echo "ERROR: Make sure the secret /tfe/license exists and contains your license content"
+  exit 1
+fi
+
+# Extract license content from JSON
+LICENSE_CONTENT=$(echo "$LICENSE_JSON" | jq -r '.license')
+
+if [ -z "$LICENSE_CONTENT" ] || [ "$LICENSE_CONTENT" == "null" ]; then
+  echo "ERROR: Failed to extract license content from Secrets Manager"
+  echo "ERROR: Secret format should be: {\"license\": \"<license-content>\"}"
+  exit 1
+fi
+
+echo "--- TFE license retrieved successfully ---"
+
+# Save license to file
+echo "$LICENSE_CONTENT" | sudo tee /tmp/tfe-license.rli > /dev/null
+
+# Load license into Replicated
+echo "--- Loading TFE license into Replicated ---"
+sudo replicatedctl license-load < /tmp/tfe-license.rli
+
+# Clean up license file (contains sensitive data)
+sudo rm -f /tmp/tfe-license.rli
+
+echo "--- TFE license loaded successfully ---"
+
+###############################################################################
+# 7b. Import TFE Configuration and Start Application
+###############################################################################
 # Import TFE settings and apply configuration
 echo "--- Importing TFE settings ---"
-sudo replicatedctl app-config import /etc/tfe-settings.json
+cat /etc/tfe-settings.json | sudo replicatedctl app-config import
 
 echo "--- Applying TFE configuration ---"
 sudo replicatedctl app apply-config -y

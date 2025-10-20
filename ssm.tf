@@ -36,3 +36,29 @@ resource "aws_ssm_parameter" "tfe_enc_password" {
     ignore_changes = [value]
   }
 }
+
+# TFE License File stored in Secrets Manager
+# You'll need to manually upload your .rli license file content to this secret
+resource "aws_secretsmanager_secret" "tfe_license" {
+  name        = "/tfe/license"
+  description = "TFE license file content (.rli file)"
+
+  tags = {
+    Name    = "/tfe/license"
+    service = "tfe"
+    purpose = "license"
+  }
+}
+
+# Placeholder secret version - you'll need to update this with your actual license
+resource "aws_secretsmanager_secret_version" "tfe_license" {
+  secret_id = aws_secretsmanager_secret.tfe_license.id
+  secret_string = jsonencode({
+    license = "REPLACE_WITH_YOUR_LICENSE_CONTENT"
+  })
+
+  lifecycle {
+    ignore_changes = [secret_string]
+  }
+}
+
