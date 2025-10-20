@@ -58,15 +58,16 @@ resource "aws_launch_template" "tfe" {
     ebs {
       volume_size           = 50 # TFE recommendation: 40-50 GB minimum
       volume_type           = "gp3"
-      encrypted             = false # Temporarily disabled to test KMS permission issue
+      encrypted             = true
       delete_on_termination = true
     }
   }
 
   # IMDSv2 required for security
+  # Hop limit set to 2 to allow access from Docker containers (required for user data script)
   metadata_options {
     http_tokens                 = "required"
-    http_put_response_hop_limit = 1
+    http_put_response_hop_limit = 2
     http_endpoint               = "enabled"
   }
 

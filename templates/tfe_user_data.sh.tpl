@@ -164,8 +164,19 @@ echo "--- TFE encryption password retrieved successfully (value hidden) ---"
 ###############################################################################
 echo "--- Installing Replicated ---"
 
-# Get private IP from instance metadata service (IMDS)
-PRIVATE_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
+# Get private IP from instance metadata service (IMDS) using IMDSv2
+# IMDSv2 requires a session token for security
+echo "--- Fetching instance metadata using IMDSv2 ---"
+TOKEN=$(curl -X PUT -s -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" \
+  http://169.254.169.254/latest/api/token)
+
+if [ -z "$TOKEN" ]; then
+  echo "ERROR: Failed to retrieve IMDSv2 token"
+  exit 1
+fi
+
+PRIVATE_IP=$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" \
+  http://169.254.169.254/latest/meta-data/local-ipv4)
 
 if [ -z "$PRIVATE_IP" ]; then
   echo "ERROR: Failed to retrieve private IP from IMDS"
