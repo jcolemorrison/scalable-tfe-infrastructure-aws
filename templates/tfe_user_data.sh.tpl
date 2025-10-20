@@ -94,14 +94,18 @@ while ! command -v replicatedctl &> /dev/null; do
   ELAPSED=$((ELAPSED + 10))
 done
 
-# Wait for Replicated API
-MAX_WAIT=120
+# Wait for Replicated API - test the actual license-load endpoint
+echo "--- Waiting for Replicated API ---"
+MAX_WAIT=180
 ELAPSED=0
 API_READY=false
 while [ $ELAPSED -lt $MAX_WAIT ]; do
-  sudo replicatedctl system version &> /dev/null && API_READY=true && break
-  sleep 5
-  ELAPSED=$((ELAPSED + 5))
+  if echo "" | sudo replicatedctl license-load &> /dev/null; then
+    API_READY=true
+    break
+  fi
+  sleep 10
+  ELAPSED=$((ELAPSED + 10))
 done
 [ "$API_READY" = false ] && echo "ERROR: Replicated API not ready" && exit 1
 
