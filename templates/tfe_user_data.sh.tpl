@@ -100,8 +100,8 @@ MAX_WAIT=180
 ELAPSED=0
 API_READY=false
 while [ $ELAPSED -lt $MAX_WAIT ]; do
-  # Check if socket exists and is writable, then test app status endpoint
-  if [ -S /var/run/replicated/replicated-cli.sock ] && sudo replicatedctl app status &> /dev/null; then
+  # Check if socket exists and system status works (doesn't require license)
+  if [ -S /var/run/replicated/replicated-cli.sock ] && sudo replicatedctl system status &> /dev/null; then
     API_READY=true
     break
   fi
