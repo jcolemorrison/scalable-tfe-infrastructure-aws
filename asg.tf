@@ -20,7 +20,7 @@ resource "aws_autoscaling_group" "tfe" {
   # Launch Template configuration
   launch_template {
     id      = aws_launch_template.tfe.id
-    version = tostring(aws_launch_template.tfe.latest_version) # Track LT version explicitly (update_default_version = true in LT)
+    version = "$Latest" # Always use latest version (best for dev/workshop; consider pinning in prod)
   }
 
   # Load Balancer integration
