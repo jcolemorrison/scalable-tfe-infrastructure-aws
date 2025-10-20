@@ -27,6 +27,7 @@ export REDIS_HOST="${redis_host}"
 export REDIS_PORT="${redis_port}"
 export REDIS_USE_TLS="${redis_use_tls}"
 export REDIS_USE_AUTH="${redis_use_auth}"
+export LICENSE_SECRET_ARN="${license_secret_arn}"
 
 # Logging
 LOG_FILE="/var/log/tfe_user_data.log"
@@ -306,7 +307,7 @@ LICENSE_JSON=""
 
 while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
   LICENSE_JSON=$(aws secretsmanager get-secret-value \
-    --secret-id "/tfe/license" \
+    --secret-id "$LICENSE_SECRET_ARN" \
     --region "$AWS_REGION" \
     --query SecretString \
     --output text 2>/dev/null) && break
@@ -320,20 +321,28 @@ done
 
 if [ -z "$LICENSE_JSON" ]; then
   echo "ERROR: Failed to fetch TFE license from Secrets Manager after $MAX_RETRIES attempts"
-  echo "ERROR: Make sure the secret /tfe/license exists and contains your license content"
+  echo "ERROR: Make sure the secret exists and contains your license content"
+  echo "ERROR: Secret ARN: $LICENSE_SECRET_ARN"
   exit 1
 fi
 
 # Extract license content from JSON
 LICENSE_CONTENT=$(echo "$LICENSE_JSON" | jq -r '.license')
 
-if [ -z "$LICENSE_CONTENT" ] || [ "$LICENSE_CONTENT" == "null" ]; then
+if [ -z "$LICENSE_CONTENT" ] || [ "$LICENSE_CONTENT" == "null" ] || [ "$LICENSE_CONTENT" == "REPLACE_WITH_YOUR_LICENSE_CONTENT" ]; then
   echo "ERROR: Failed to extract license content from Secrets Manager"
   echo "ERROR: Secret format should be: {\"license\": \"<license-content>\"}"
+  echo "ERROR: Make sure you've replaced the placeholder with your actual TFE license"
   exit 1
 fi
 
 echo "--- TFE license retrieved successfully ---"
+
+# Check if license is base64 encoded (starts with eyJ or similar)
+if echo "$LICENSE_CONTENT" | grep -q "^eyJ"; then
+  echo "--- License appears to be base64 encoded, decoding ---"
+  LICENSE_CONTENT=$(echo "$LICENSE_CONTENT" | base64 -d)
+fi
 
 # Save license to file
 echo "$LICENSE_CONTENT" | sudo tee /tmp/tfe-license.rli > /dev/null
