@@ -116,15 +116,15 @@ output "tfe_instance_role_arn" {
 }
 
 # Launch Template Outputs
-output "tfe_launch_template_id" {
-  description = "ID of the TFE launch template"
-  value       = aws_launch_template.tfe.id
-}
+# output "tfe_launch_template_id" {
+#   description = "ID of the TFE launch template"
+#   value       = aws_launch_template.tfe.id
+# }
 
-output "tfe_launch_template_latest_version" {
-  description = "Latest version of the TFE launch template"
-  value       = aws_launch_template.tfe.latest_version
-}
+# output "tfe_launch_template_latest_version" {
+#   description = "Latest version of the TFE launch template"
+#   value       = aws_launch_template.tfe.latest_version
+# }
 
 output "tfe_hostname" {
   description = "TFE hostname (FQDN)"
@@ -180,15 +180,15 @@ output "tfe_alb_listener_arn" {
 }
 
 # Auto Scaling Group Outputs
-output "tfe_asg_name" {
-  description = "Auto Scaling Group name for TFE app nodes"
-  value       = aws_autoscaling_group.tfe.name
-}
+# output "tfe_asg_name" {
+#   description = "Auto Scaling Group name for TFE app nodes"
+#   value       = aws_autoscaling_group.tfe.name
+# }
 
-output "tfe_asg_arn" {
-  description = "Auto Scaling Group ARN for TFE app nodes"
-  value       = aws_autoscaling_group.tfe.arn
-}
+# output "tfe_asg_arn" {
+#   description = "Auto Scaling Group ARN for TFE app nodes"
+#   value       = aws_autoscaling_group.tfe.arn
+# }
 
 # Route 53 Record Outputs
 output "tfe_fqdn" {
