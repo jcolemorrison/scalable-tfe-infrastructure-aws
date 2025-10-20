@@ -198,7 +198,8 @@ echo "--- Downloading Replicated installer ---"
 curl -o /tmp/install.sh https://install.terraform.io/ptfe/stable
 
 echo "--- Running Replicated installer (non-interactive) ---"
-yes | sudo bash /tmp/install.sh \
+# Ignore SIGPIPE (exit code 141) from 'yes' command - this is expected behavior
+(yes || true) | sudo bash /tmp/install.sh \
   no-proxy \
   private-address="$PRIVATE_IP" \
   public-address="$PRIVATE_IP" \
