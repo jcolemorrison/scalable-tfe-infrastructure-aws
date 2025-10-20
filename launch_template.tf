@@ -99,6 +99,9 @@ resource "aws_launch_template" "tfe" {
 
     # TFE license (fetched from Secrets Manager)
     license_secret_arn = aws_secretsmanager_secret.tfe_license.arn
+
+    # TFE encryption password (from SSM Parameter Store)
+    enc_password = random_password.tfe_enc_password.result
   }))
 
   # Tag specifications for instances and volumes created from this template
