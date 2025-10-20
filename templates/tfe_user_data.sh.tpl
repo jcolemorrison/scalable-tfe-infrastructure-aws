@@ -94,13 +94,14 @@ while ! command -v replicatedctl &> /dev/null; do
   ELAPSED=$((ELAPSED + 10))
 done
 
-# Wait for Replicated API - test the actual license-load endpoint
+# Wait for Replicated socket and API
 echo "--- Waiting for Replicated API ---"
 MAX_WAIT=180
 ELAPSED=0
 API_READY=false
 while [ $ELAPSED -lt $MAX_WAIT ]; do
-  if echo "" | sudo replicatedctl license-load &> /dev/null; then
+  # Check if socket exists and is writable, then test app status endpoint
+  if [ -S /var/run/replicated/replicated-cli.sock ] && sudo replicatedctl app status &> /dev/null; then
     API_READY=true
     break
   fi
