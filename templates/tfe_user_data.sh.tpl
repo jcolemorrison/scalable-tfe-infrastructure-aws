@@ -296,6 +296,29 @@ done
 
 echo "--- Replicated is ready ---"
 
+# Wait for Replicated API to be fully ready to accept commands
+echo "--- Waiting for Replicated API to be ready ---"
+MAX_WAIT=120 # 2 minutes
+ELAPSED=0
+API_READY=false
+
+while [ $ELAPSED -lt $MAX_WAIT ]; do
+  if sudo replicatedctl system version &> /dev/null; then
+    API_READY=true
+    break
+  fi
+  echo "--- Waiting for Replicated API... ($ELAPSED/$MAX_WAIT seconds) ---"
+  sleep 5
+  ELAPSED=$((ELAPSED + 5))
+done
+
+if [ "$API_READY" = false ]; then
+  echo "ERROR: Replicated API did not become ready within $MAX_WAIT seconds"
+  exit 1
+fi
+
+echo "--- Replicated API is ready ---"
+
 ###############################################################################
 # 7a. Fetch and Load TFE License
 ###############################################################################
