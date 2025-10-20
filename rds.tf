@@ -35,7 +35,7 @@ resource "aws_db_instance" "tfe" {
 
   # Engine configuration
   engine         = "postgres"
-  engine_version = "15.10" # Latest PostgreSQL 15.x
+  engine_version = "15.12" # Latest PostgreSQL 15.x
   instance_class = local.db_instance_classes[local.db_size]
   db_name        = "tfe"
   port           = 5432
