@@ -174,7 +174,7 @@ while [ $ELAPSED -lt $MAX_WAIT ]; do
   fi
   
   if [ $((ELAPSED % 60)) -eq 0 ]; then
-    echo "Still waiting... (${ELAPSED}s elapsed)"
+    echo "Still waiting... ($${ELAPSED}s elapsed)"
     sudo docker compose ps
   fi
   
