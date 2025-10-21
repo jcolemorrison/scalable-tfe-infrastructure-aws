@@ -151,7 +151,7 @@ services:
         target: /tmp
         tmpfs:
           size: 1073741824
-          mode: 1777
+          mode: 1023
     cap_add:
       - CAP_IPC_LOCK
     restart: unless-stopped
