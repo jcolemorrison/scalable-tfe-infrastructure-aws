@@ -9,9 +9,9 @@
 resource "aws_autoscaling_group" "tfe" {
   name = "${var.project_name}-asg"
 
-  # Capacity configuration
-  min_size         = 2
-  desired_capacity = 2
+  # Capacity configuration - single instance for stability during testing
+  min_size         = 1
+  desired_capacity = 1
   max_size         = 4
 
   # Network configuration - deploy in private subnets across AZs
