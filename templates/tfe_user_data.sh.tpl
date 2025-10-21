@@ -144,6 +144,9 @@ services:
       - type: bind
         source: /etc/ssl/private/terraform-enterprise
         target: /etc/ssl/private/terraform-enterprise
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
     cap_add:
       - CAP_IPC_LOCK
     restart: unless-stopped
