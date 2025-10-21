@@ -151,6 +151,7 @@ services:
         target: /tmp
         tmpfs:
           size: 1073741824
+          mode: 1777
     cap_add:
       - CAP_IPC_LOCK
     restart: unless-stopped
@@ -181,6 +182,13 @@ echo "$TFE_LICENSE" | sudo docker login images.releases.hashicorp.com --username
 echo "--- Starting TFE ---"
 cd /etc/tfe
 sudo docker compose up -d
+
+# Wait a moment for container to start and create the cache volume
+sleep 10
+
+# Fix permissions on cache directory for task-worker (from host side)
+echo "--- Fixing cache directory permissions ---"
+sudo chmod -R 1777 /var/lib/docker/volumes/tfe-cache/_data
 
 # Wait for TFE to be healthy
 echo "--- Waiting for TFE to become healthy ---"
