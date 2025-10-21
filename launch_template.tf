@@ -97,11 +97,8 @@ resource "aws_launch_template" "tfe" {
     redis_use_tls  = "1"  # TFE expects "1" for true, "0" for false
     redis_use_auth = "0"  # No auth token (redis.tf: use_auth_token = false)
 
-    # TFE license (fetched from Secrets Manager)
+    # TFE license (fetched from Secrets Manager at runtime)
     license_secret_arn = aws_secretsmanager_secret.tfe_license.arn
-
-    # TFE encryption password (from SSM Parameter Store)
-    enc_password = random_password.tfe_enc_password.result
   }))
 
   # Tag specifications for instances and volumes created from this template

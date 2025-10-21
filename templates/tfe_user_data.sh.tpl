@@ -16,7 +16,6 @@ export REDIS_PORT="${redis_port}"
 export REDIS_USE_TLS="${redis_use_tls}"
 export REDIS_USE_AUTH="${redis_use_auth}"
 export LICENSE_SECRET_ARN="${license_secret_arn}"
-export ENC_PASSWORD="${enc_password}"
 
 LOG_FILE="/var/log/tfe_user_data.log"
 exec > >(tee -a "$LOG_FILE") 2>&1
@@ -53,6 +52,17 @@ RDS_USERNAME=$(echo "$RDS_SECRET_JSON" | jq -r '.username')
 RDS_PASSWORD=$(echo "$RDS_SECRET_JSON" | jq -r '.password')
 [ -z "$RDS_USERNAME" ] || [ "$RDS_USERNAME" == "null" ] && echo "ERROR: Failed to extract RDS username" && exit 1
 [ -z "$RDS_PASSWORD" ] || [ "$RDS_PASSWORD" == "null" ] && echo "ERROR: Failed to extract RDS password" && exit 1
+
+# Fetch TFE Encryption Password from SSM
+echo "--- Fetching encryption password ---"
+RETRY_COUNT=0
+ENC_PASSWORD=""
+while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+  ENC_PASSWORD=$(aws ssm get-parameter --name "/tfe/enc_password" --region "$AWS_REGION" --with-decryption --query Parameter.Value --output text 2>/dev/null) && break
+  RETRY_COUNT=$((RETRY_COUNT + 1))
+  [ $RETRY_COUNT -lt $MAX_RETRIES ] && sleep 5
+done
+[ -z "$ENC_PASSWORD" ] || [ "$ENC_PASSWORD" == "null" ] && echo "ERROR: Failed to fetch encryption password" && exit 1
 
 # Fetch TFE License from Secrets Manager
 echo "--- Fetching TFE license ---"
