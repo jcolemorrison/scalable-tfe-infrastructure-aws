@@ -165,6 +165,10 @@ DOCKEREOF
 sudo mkdir -p /var/log/tfe
 sudo chmod 755 /var/log/tfe
 
+# Ensure Docker socket has correct permissions for TFE
+echo "--- Configuring Docker socket permissions ---"
+sudo chmod 666 /var/run/docker.sock
+
 # Authenticate to HashiCorp container registry using license
 echo "--- Authenticating to container registry ---"
 echo "$TFE_LICENSE" | sudo docker login images.releases.hashicorp.com --username terraform --password-stdin

@@ -61,6 +61,17 @@ resource "aws_vpc_security_group_ingress_rule" "app_from_alb" {
   referenced_security_group_id = aws_security_group.alb.id
 }
 
+# Allow TFE instances to communicate with each other for Vault clustering
+resource "aws_vpc_security_group_ingress_rule" "app_vault_cluster" {
+  security_group_id = aws_security_group.app.id
+  description       = "Allow Vault cluster communication between TFE instances (active-active)"
+
+  from_port                    = 8201
+  to_port                      = 8201
+  ip_protocol                  = "tcp"
+  referenced_security_group_id = aws_security_group.app.id
+}
+
 resource "aws_vpc_security_group_egress_rule" "app_all" {
   security_group_id = aws_security_group.app.id
   description       = "Allow all outbound traffic for S3, SSM, OS updates, and responses"
