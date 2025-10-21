@@ -147,6 +147,10 @@ services:
       - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock
+      - type: tmpfs
+        target: /tmp
+        tmpfs:
+          size: 1073741824
     cap_add:
       - CAP_IPC_LOCK
     restart: unless-stopped
