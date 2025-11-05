@@ -14,7 +14,7 @@ resource "aws_s3_bucket" "tfe_objects" {
 
   # Prevent accidental deletion in production
   # Set to true for dev/test environments
-  force_destroy = false
+  force_destroy = true
 
   tags = {
     Name    = "tfe-objects-${random_id.s3_suffix.hex}"
